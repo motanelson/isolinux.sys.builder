@@ -45,9 +45,9 @@ while running:
     if keys[pygame.K_RIGHT]:
         x += 1
     if keys[pygame.K_UP]:
-        z = max(z_min, z - 1)
-    if keys[pygame.K_DOWN]:
         z = min(z_max, z + 1)
+    if keys[pygame.K_DOWN]:
+        z = max(z_min, z - 1)
     if x<-(z*0.1):
         x=-(z*0.1)
     if x>(z*0.1):
