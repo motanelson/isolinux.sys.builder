@@ -52,7 +52,7 @@ boneco_original_height = boneco_image.get_height()
 x = 0
 z = 10  # Controle da "profundidade"
 z_min = 5
-z_max = 50
+z_max = 30
 scale_factor = 10
 
 # Loop principal
@@ -70,13 +70,20 @@ while running:
     if keys[pygame.K_RIGHT]:
         x += 1
     if keys[pygame.K_UP]:
-        z = min(z_max, z + 5)
+        z = z + 5
     if keys[pygame.K_DOWN]:
-        z = max(z_min, z - 5)
+        z =  z - 5
+    if keys[pygame.K_SPACE]:
+        print(str(z))
+
     if x<-(z):
         x=-(z)
     if x>z:
         x=z
+    if z>z_max:
+        z=z_max
+    if z<z_min:
+        z=z_min
 
     # Calcular parâmetros com base em z
     scale = 1 / z * scale_factor
