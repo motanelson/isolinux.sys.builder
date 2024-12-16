@@ -83,7 +83,7 @@ while running:
     scaled_width = int(boneco_original_width * scale)
     scaled_height = int(boneco_original_height * scale)
     center_x = screen_width // 2 + int(x * scale * 20)
-    center_y = screen_height // 2 + int(z * scale * 10)
+    center_y = screen_height // 2 + int(z * scale * 3)
 
     # Redimensionar a imagem do boneco
     boneco_scaled = pygame.transform.scale(boneco_image, (scaled_width, scaled_height))
@@ -100,7 +100,7 @@ while running:
     pygame.display.flip()
 
     # Controlar a taxa de quadros
-    clock.tick(60)
+    clock.tick(6)
     imagecounter=imagecounter+1
     if imagecounter>2:
         imagecounter=0
