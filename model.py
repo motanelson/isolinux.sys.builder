@@ -77,10 +77,10 @@ while running:
     if keys[pygame.K_SPACE]:
         print(str(z))
 
-    if x<-(z*0.6):
-        x=-(z*0.6)
-    if x>z*0.6:
-        x=z*0.6
+    if x<-((z_max-z)*0.2):
+        x=-((z_max-z)*0.2)
+    if x>(z_max-z)*0.2:
+        x=(z_max-z)*0.2
     if z>z_max:
         z=z_max
     if z<z_min:
