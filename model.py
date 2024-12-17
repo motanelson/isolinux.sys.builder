@@ -3,7 +3,7 @@ import math
 
 # Função para desenhar a imagem em triângulos com pontos
 def draw_triangles_with_points(screen, image):
-    screen_heights=705
+    screen_heights=screen_height
     half_width = screen_width // 2
     for x in range(half_width):
         left_height = int(screen_height * (x / half_width))
@@ -13,13 +13,13 @@ def draw_triangles_with_points(screen, image):
         for y in range(left_height):
             scaled_y = int(y / (left_height + 1) * image_height)
             color = image.get_at((int(half_width-x / half_width * image_width), scaled_y))
-            screen.set_at((half_width + x, (screen_heights - left_height) // 2 + y), color)
+            screen.set_at((half_width + x, (screen_height - left_height) // 2 + y), color)
 
         # Parte direita do triângulo (encolhendo)
         for y in range(right_height):
             scaled_y = int(y / (right_height + 1) * image_height)
             color = image.get_at((int(( x / half_width) * image_width), scaled_y))
-            screen.set_at(( x, (screen_heights - right_height) // 2 + y), color)
+            screen.set_at(( x, (screen_height - right_height) // 2 + y), color)
 
 # Inicializar o Pygame
 pygame.init()
@@ -53,7 +53,7 @@ boneco_original_height = boneco_image.get_height()
 x = 0
 z = 10  # Controle da "profundidade"
 z_min = 5
-z_max = 50
+z_max = 120
 scale_factor = 10
 
 # Loop principal
@@ -91,7 +91,7 @@ while running:
     scaled_width = int(boneco_original_width * scale)
     scaled_height = int(boneco_original_height * scale)
     center_x = screen_width // 2 + int(x * scale * 20)
-    center_y = screen_height // (2) + int(z * scale * 10)
+    center_y = screen_height // (2.7) + int(z * scale * 10)
 
     # Redimensionar a imagem do boneco
     boneco_scaled = pygame.transform.scale(boneco_image, (scaled_width, scaled_height))
