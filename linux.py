@@ -88,7 +88,7 @@ class FSProcessorApp:
         try:
             source_file = io.StringIO(self.files_to_exe)
             obj = cc(source_file, 'x86_64')
-            obj=link([obj2,obj])
+            obj=link([obj2,obj],"link.ld")
             objt=obj.sections[0].data
 
         except Exception as e:

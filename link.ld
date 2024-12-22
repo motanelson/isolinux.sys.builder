@@ -1,0 +1,9 @@
+MEMORY code LOCATION=0x100000 SIZE=0x10000 {
+    SECTION(reset)
+    ALIGN(4)
+    SECTION(code)
+}
+
+MEMORY ram LOCATION=0x10000000 SIZE=0xA000 {
+    SECTION(data)
+}
