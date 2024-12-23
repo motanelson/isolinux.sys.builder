@@ -1,9 +1,33 @@
-MEMORY code LOCATION=0x100000 SIZE=100000 {
-    SECTION(reset)
-    ALIGN(4)
-    SECTION(code)
-}
-
-MEMORY ram LOCATION=0x100000 SIZE=100000 {
-    SECTION(data)
+ENTRY(_start)
+SECTIONS
+{
+	
+	. = 1M;
+ 
+	
+	.text BLOCK(4K) : ALIGN(4K)
+	{
+		*(.multiboot)
+		*(.text)
+	}
+ 
+	
+	.rodata BLOCK(4K) : ALIGN(4K)
+	{
+		*(.rodata)
+	}
+ 
+	
+	.data BLOCK(4K) : ALIGN(4K)
+	{
+		*(.data)
+	}
+ 
+	
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
+		*(COMMON)
+		*(.bss)
+	}
+ 
 }

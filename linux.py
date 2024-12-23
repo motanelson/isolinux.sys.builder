@@ -1,15 +1,21 @@
 from io import StringIO
-from ppci.api import ir_to_object, get_arch,objcopy, link
-import io
-from ppci.api import cc
-from ppci.api import asm
 import tkinter as tk
+from tkinter import messagebox
+from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import asksaveasfilename
 from tkinter import filedialog, messagebox
+import subprocess
+import shutil
+import os
 from pycdlib import PyCdlib
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
     from io import BytesIO
+gcc="/usr/bin/i686-linux-gnu-gcc"
+asld="/usr/bin/i686-linux-gnu-ld"
+asas="/usr/bin/i686-linux-gnu-as"
+asobj="/usr/bin/i686-linux-gnu-objcopy"
 class FSProcessorApp:
     def __init__(self, root):
         self.root = root
@@ -20,7 +26,7 @@ class FSProcessorApp:
         # Dados carregados do arquivo .fs
         self.system_config=""
         self.system_name=""
-        self.files_to_exe=None
+        self.files_to_exe=b''
         self.files_to_process = None        
         # Botão para carregar arquivo .fs
         self.load_button = tk.Button(
@@ -39,7 +45,18 @@ class FSProcessorApp:
             root, text="", bg="black", fg="white", wraplength=350
         )
         self.status_label.pack(pady=10)
-
+    def execute_command(self, command,show:bool):
+        try:
+            
+            result = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, text=True)
+            result=result.strip()
+            
+            if show and result!="":
+                print(result)
+                messagebox.showerror("error:",result)
+        except subprocess.CalledProcessError as e:
+            if show:
+                messagebox.showerror("error:",e)
     def load_fs_file(self):
         file_path = filedialog.askopenfilename(
             filetypes=[("c Files", "*.c"), ("All Files", "*.*")]
@@ -48,15 +65,26 @@ class FSProcessorApp:
             return
 
         try:
-            self.system_name="ISOLINUX"
+            system_name=file_path
+            splitdir=file_path.split("/")
+            file_path=splitdir[len(splitdir)-1]
             
+            
+
+            self.system_name="ISOLINUX"
+            print(file_path)
+            self.execute_command(asas+" -o /tmp/boot.o ./boot.s",False)
+            fff=gcc+f' -c -nostdlib "$1" -o /tmp/kernel.o'.replace("$1",file_path)
+            self.execute_command(fff,True)
+            self.execute_command(asld+"  -nostdlib -T ./link.ld /tmp/boot.o /tmp/kernel.o  -o /tmp/kernel.bin ",False)
+            self.execute_command(asobj+" /tmp/kernel.bin /tmp/hello.c32  --output-target binary ",False)
             with open("isolinux.bin", "rb") as f:
                 content = f.read()
                 self.files_to_process=content
             with open("isolinux.cfg", "rb") as f:
                 content = f.read()
                 self.system_config=content
-            with open(file_path, "r") as f:
+            with open("/tmp/hello.c32", "rb") as f:
                 content = f.read()
                 self.files_to_exe = content
             
@@ -66,43 +94,17 @@ class FSProcessorApp:
             self.status_label.config(text="Failed to load .fs file.")
 
     def save_iso_file(self):
-        objt=b''
         
-        source_files = io.StringIO("""
-        start:
-        db 0xb8 
-        db 0xff 
-        db 0x4c 
-        db 0xcd 
-        db 0x21
-        db 0x90
-        db 0x90	
-        db 0x90	
-        db 0x90	
-        db 0x90	
-        db 0x90	
-        """)
-        obj2 = asm(source_files, 'x86_64')
-        
-        
-        try:
-            source_file = io.StringIO(self.files_to_exe)
-            obj = cc(source_file, 'x86_64')
-            obj=link([obj2,obj],"link.ld")
-            objt=obj.sections[0].data
-
-        except Exception as e:
-            print(e)
-            print ("error:")
-            return
        
-       
+        f1=open("hello.c32","wb")
+        f1.write(self.files_to_exe)
+        f1.close()
         save_path = filedialog.asksaveasfilename(
             defaultextension=".iso", filetypes=[("ISO Files", "*.iso"), ("All Files", "*.*")]
         )
         if not save_path:
             return
-        print(objt)
+        
         try:
             iso = PyCdlib()
             iso.new()
@@ -118,13 +120,13 @@ class FSProcessorApp:
             iso.add_directory('/BOOT/GRUB')
             
             iso.add_directory('/BOOT/'+self.system_name+"")
-            print(self.files_to_process)
+            
             bootstr =self.files_to_process
             iso.add_fp(BytesIO(bootstr), len(bootstr), '/BOOT/'+self.system_name+"/"+self.system_name+".BIN")
             bootstr =self.system_config
             iso.add_fp(BytesIO(bootstr), len(bootstr), '/BOOT/'+self.system_name+"/"+self.system_name+".CFG")
             
-            bootstr =objt
+            bootstr =self.files_to_exe
             iso.add_fp(BytesIO(bootstr), len(bootstr), '/BOOT/'+self.system_name+"/HELLO.C32")
             iso.write(save_path)
             iso.close()
