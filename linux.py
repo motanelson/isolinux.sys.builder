@@ -21,7 +21,7 @@ class FSProcessorApp:
         self.root = root
         self.root.title("FS to ISO Creator")
         self.root.geometry("400x200")
-        self.root.configure(bg="black")
+        self.root.configure(bg="yellow")
         
         # Dados carregados do arquivo .fs
         self.system_config=""
@@ -30,19 +30,19 @@ class FSProcessorApp:
         self.files_to_process = None        
         # Botão para carregar arquivo .fs
         self.load_button = tk.Button(
-            root, text="Load .fs File", command=self.load_fs_file, bg="white", fg="black"
+            root, text="Load .fs File", command=self.load_fs_file, bg="black", fg="yellow"
         )
         self.load_button.pack(pady=10)
         
         # Botão para criar arquivo .iso
         self.save_button = tk.Button(
-            root, text="Save as .iso", command=self.save_iso_file, bg="white", fg="black"
+            root, text="Save as .iso", command=self.save_iso_file, bg="black", fg="yellow"
         )
         self.save_button.pack(pady=10)
         
         # Rótulo de status
         self.status_label = tk.Label(
-            root, text="", bg="black", fg="white", wraplength=350
+            root, text="", bg="yellow", fg="black", wraplength=350
         )
         self.status_label.pack(pady=10)
     def execute_command(self, command,show:bool):
@@ -52,11 +52,11 @@ class FSProcessorApp:
             result=result.strip()
             
             if show and result!="":
+                
                 print(result)
-                messagebox.showerror("error:",result)
         except subprocess.CalledProcessError as e:
             if show:
-                messagebox.showerror("error:",e)
+                print(e)
     def load_fs_file(self):
         file_path = filedialog.askopenfilename(
             filetypes=[("c Files", "*.c"), ("All Files", "*.*")]
