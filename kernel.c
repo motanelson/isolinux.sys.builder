@@ -1,4 +1,5 @@
 void kernel_main();
+void clear();
 int xxx=0;
 int yyy=0;
 int zzz=0;
@@ -8,9 +9,18 @@ typedef int size_t;
 
 int NULL;
 char *scr2=(char *)0x000b8000L;//[80*26*2];
+void clear(){
+	int n=0;
+	char *src = scr2;//(char *)0x000b8000L;
+	for(n=0;n<80*24*2;n=n+2){
+		src[n]=32;
+		src[n+1]=0x60;
+	}
+}
 
 void scrollb8000()
 {
+        
 	int n=0;
 	int nn=0;
 	
@@ -52,7 +62,7 @@ void putss(char* s){
 }
 
 void kernel_main(){
-    
+    clear();
     putss("hello world\n\n");
     for(;;);
 }
